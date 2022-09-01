@@ -43,7 +43,6 @@ export default function App() {
     editTask[taskIndex].name = Hello;
 
     setTasks(editTask);
-    console.log(editTask);
   };
 
   const onChangeCompleted = (taskId) => {
