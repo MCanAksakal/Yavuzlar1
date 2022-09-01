@@ -1,45 +1,54 @@
-import { useMemo } from 'react'
+import { useMemo } from "react";
 
-import { Task } from './Task'
-import { BoxAlert } from './BoxAlert'
+import { Task } from "./Task";
+import { BoxAlert } from "./BoxAlert";
 
-export function Tasks({ tasks, searchTaskName, onRemoveTask, onChangeCompletedTask, onEditTask }) {
+export function Tasks({
+  tasks,
+  searchTaskName,
+  onRemoveTask,
+  onChangeCompletedTask,
+  onEditTask,
+  onEditSaveTask,
+}) {
+  const isVisibleTask = (task) => {
+    const taskName = task.name.toLocaleLowerCase();
+    return taskName.includes(searchTaskName);
+  };
 
-    const isVisibleTask = (task) => {
-        const taskName = task.name.toLocaleLowerCase()
-        return taskName.includes(searchTaskName)
+  const stateTasks = useMemo(() => {
+    if (tasks.length === 0) {
+      return "empty";
+    } else if (!tasks.some((task) => isVisibleTask(task))) {
+      return "search-empty";
     }
 
-    const stateTasks = useMemo(() => {
-        if (tasks.length === 0) {
-            return 'empty'
-        } else if (!tasks.some(task => isVisibleTask(task))) {
-            return 'search-empty'
-        }
+    return "default";
+  }, [tasks, searchTaskName]);
 
-        return 'default'
+  if (stateTasks === "empty") {
+    return <BoxAlert type={stateTasks} />;
+  }
 
-    }, [tasks, searchTaskName])
+  if (stateTasks === "search-empty") {
+    return <BoxAlert type="warning" />;
+  }
 
-    if (stateTasks === 'empty') {
-        return <BoxAlert type={stateTasks} />
-    }
-
-    if (stateTasks === 'search-empty') {
-        return <BoxAlert type="warning" />
-    }
-
-    return (
-        <ul className="space-y-1 list-none list-inside text-gray-500 dark:text-gray-400">
-            {tasks.map(task => isVisibleTask(task) && (
-                <Task
-                    {...task}
-                    key={task.id}
-                    onRemove={onRemoveTask}
-                    onEdit={onEditTask}
-                    onChangeCompleted={onChangeCompletedTask}
-                />
-            ))}
-        </ul>
-    )
+  return (
+    <ul className="space-y-1 list-none list-inside text-gray-500 dark:text-gray-400">
+      {tasks.map(
+        (task) =>
+          isVisibleTask(task) && (
+            <Task
+              {...task}
+              key={task.id}
+              onRemove={onRemoveTask}
+              onEdit={onEditTask}
+              onEditSave={onEditSaveTask}
+              onChangeCompleted={onChangeCompletedTask}
+            />
+          )
+      )}
+    </ul>
+  );
 }
